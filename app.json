@@ -37,6 +37,10 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+     "extra": {
+      "EXPO_PUBLIC_SUPABASE_URL": "https://SEU-PROJECT-REF.supabase.co",
+      "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIs..."
     }
   }
 }
