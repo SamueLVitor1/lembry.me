@@ -1,33 +1,89 @@
-import React, { useState } from "react";
-import { SafeAreaView, View, FlatList, RefreshControl } from "react-native";
-
+import React, { useMemo, useState } from "react";
+import {
+  SafeAreaView,
+  View,
+  SectionList,
+  RefreshControl,
+  Text,
+} from "react-native";
 import { Filtro } from "@/src/types/birthdays";
 import { useBirthdays } from "@/hooks/useBirthdays";
 import { AppHeader } from "@/components/app-header";
 import { FilterChips } from "@/components/filter-chips";
 import { TodayHighlight } from "@/components/today-highlight";
-import { BirthdayItem } from "@/components/BirthdayItem";
-import { EmptyState } from "@/components/EmptyState";
+import { groupByNextBirthday } from "@/src/lib/contacts";
+import { theme } from "@/constants/theme";
+import { BirthdayItem } from "@/components/birthday-item";
+import { EmptyState } from "@/components/empty-state";
 
 export default function HomeScreen() {
   const [filtro, setFiltro] = useState<Filtro>("Hoje");
-  const { lista, aniversarianteHoje, loading, err, reload } = useBirthdays(filtro);
+  const { lista, aniversarianteHoje, loading, err, reload } =
+    useBirthdays(filtro);
+
+  const sections = useMemo(() => groupByNextBirthday(lista), [lista]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#F7F8F9", paddingHorizontal: 16 }}>
-      <AppHeader />
-      <FilterChips value={filtro} onChange={setFiltro} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.colors.bg }}>
+      <View style={{ paddingHorizontal: theme.space.lg }}>
+        <AppHeader />
+        <FilterChips value={filtro} onChange={setFiltro} />
+        {aniversarianteHoje ? (
+          <TodayHighlight
+            p={aniversarianteHoje}
+            extraCountToday={
+              lista.filter(
+                (x) => x.next_birthday === aniversarianteHoje.next_birthday
+              ).length - 1
+            }
+            onPressCongrats={(p) => {
+              /* abrir ação/whatsapp etc */
+            }}
+          />
+        ) : null}
+      </View>
 
-      {aniversarianteHoje ? <TodayHighlight p={aniversarianteHoje} /> : null}
-
-      <FlatList
-        data={lista}
-        keyExtractor={(i) => i.contact_id}
-        ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: "#E6EAEA", marginLeft: 68 }} />}
+      <SectionList
+        sections={sections}
+        keyExtractor={(item) => item.contact_id}
+        contentContainerStyle={{
+          paddingHorizontal: theme.space.lg,
+          paddingBottom: 96,
+        }}
+        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        SectionSeparatorComponent={() => <View style={{ height: 16 }} />}
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={{ marginBottom: 8, marginTop: 12 }}>
+            <View
+              style={{
+                alignSelf: "flex-start",
+                backgroundColor: "#ECF3F1",
+                paddingVertical: 6,
+                paddingHorizontal: 12,
+                borderRadius: theme.radius.pill,
+              }}
+            >
+              <Text style={{ fontWeight: "800", color: theme.colors.fg }}>
+                {title}
+              </Text>
+            </View>
+          </View>
+        )}
         renderItem={({ item }) => <BirthdayItem p={item} />}
-        ListEmptyComponent={<EmptyState text={loading ? "Carregando…" : err ?? "Nenhum aniversário encontrado."} />}
-        refreshControl={<RefreshControl refreshing={loading} onRefresh={reload} />}
-        contentContainerStyle={{ paddingBottom: 96 }}
+        ListEmptyComponent={
+          <View style={{ paddingHorizontal: theme.space.lg }}>
+            <EmptyState
+              text={
+                loading
+                  ? "Carregando…"
+                  : err ?? "Nenhum aniversário encontrado."
+              }
+            />
+          </View>
+        }
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={reload} />
+        }
       />
     </SafeAreaView>
   );

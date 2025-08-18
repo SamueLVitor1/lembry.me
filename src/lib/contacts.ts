@@ -18,6 +18,16 @@ export function formatPt(iso: string) {
   return `${day} de ${month}`;
 }
 
+export function groupByNextBirthday(list: { next_birthday: string }[]) {
+  const map = new Map<string, any[]>();
+  list.forEach((it) => {
+    const label = formatPt(it.next_birthday);
+    if (!map.has(label)) map.set(label, []);
+    map.get(label)!.push(it);
+  });
+  return Array.from(map.entries()).map(([title, data]) => ({ title, data }));
+}
+
 
 export function fmtLocal(d: Date) {
   return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
