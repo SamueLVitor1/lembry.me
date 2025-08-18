@@ -9,3 +9,8 @@ export type Upcoming = {
 
 export type Filtro = "Hoje" | "Próx. 7 dias" | "Este mês" | "Todos";
 export const FILTROS: Filtro[] = ["Hoje", "Próx. 7 dias", "Este mês", "Todos"];
+export type NewContact = {
+  full_name: string;
+  role?: string | null;
+  birthdate: string; // 'YYYY-MM-DD'
+};

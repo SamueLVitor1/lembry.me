@@ -1,4 +1,5 @@
 // src/lib/contacts.ts
+import { NewContact } from '../types/birthdays';
 import { supabase } from './supabase';
 
 export type Upcoming = {
@@ -91,4 +92,21 @@ export async function getBirthdaysAllNextYear() {
     .order('full_name', { ascending: true });
   if (error) throw error;
   return (data ?? []) as Upcoming[];
+}
+
+export async function createContact(input: NewContact) {
+  const payload = {
+    full_name: input.full_name.trim(),
+    role: input.role?.trim() || null,
+    birthdate: input.birthdate, // já no formato YYYY-MM-DD
+  };
+
+  const { data, error } = await supabase
+    .from('contacts')
+    .insert(payload)
+    .select('id, full_name, role, birthdate')
+    .single();
+
+  if (error) throw error;
+  return data;
 }

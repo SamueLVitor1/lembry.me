@@ -31,11 +31,6 @@ export default function HomeScreen() {
         {aniversarianteHoje ? (
           <TodayHighlight
             p={aniversarianteHoje}
-            extraCountToday={
-              lista.filter(
-                (x) => x.next_birthday === aniversarianteHoje.next_birthday
-              ).length - 1
-            }
             onPressCongrats={(p) => {
               /* abrir ação/whatsapp etc */
             }}
