@@ -5,17 +5,14 @@ export type Upcoming = {
   contact_id: string;
   full_name: string;
   role: string | null;
-  birthdate: string;      // YYYY-MM-DD
-  next_birthday: string;  // YYYY-MM-DD
+  birthdate: string;     
+  next_birthday: string;  
   turning_age: number;
 };
 
-// Helper: YYYY-MM-DD no fuso local (evita "pular" dia por UTC)
+
 function fmtLocal(d: Date) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+  return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
 }
 
 export async function getBirthdaysToday() {
@@ -61,7 +58,7 @@ export async function getBirthdaysThisMonth() {
   return (data ?? []) as Upcoming[];
 }
 
-// "Todos": próximos 365 dias
+
 export async function getBirthdaysAllNextYear() {
   const from = new Date();
   const to = new Date();
