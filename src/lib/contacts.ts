@@ -11,7 +11,15 @@ export type Upcoming = {
 };
 
 
-function fmtLocal(d: Date) {
+export function formatPt(iso: string) {
+  const d = new Date(iso + "T00:00:00");
+  const day = new Intl.DateTimeFormat("pt-BR", { day: "numeric" }).format(d);
+  const month = new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(d);
+  return `${day} de ${month}`;
+}
+
+
+export function fmtLocal(d: Date) {
   return d.toISOString().slice(0, 10); // 'YYYY-MM-DD'
 }
 
